@@ -5,9 +5,10 @@
     xmlns:local="using:SapperGame"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:game="using:SapperGameView"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <game:SapperPanelView HorizontalTilesNumber="10" VerticalTilesNumber="10" SquareTileSize="5" BombDensityPercent="25" />
     </Grid>
 </Page>
