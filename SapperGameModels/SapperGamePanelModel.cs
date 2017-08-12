@@ -13,7 +13,7 @@ namespace Saper.Model
       
         private bool[,] isBombPositionTbl;
         private bool[,] isFieldUncoveredTbl;
- 
+
 
         public SapperGamePanelModel(ushort horizontalSize, ushort verticalSize, ushort bombsDensityPercent=20)
         {
@@ -59,6 +59,13 @@ namespace Saper.Model
 
 
         #region implementation of ISapperGamePanelOperations
+
+        public ushort GetHorizontalSize => horizontalSize;
+
+        public ushort GetVerticalSize => verticalSize;
+
+        public ushort GetBombDensityPercent => bombsDensityPercent;
+
 
         public ushort GetNumberOfAdjacentBombsIn(Coordinate field)
         {

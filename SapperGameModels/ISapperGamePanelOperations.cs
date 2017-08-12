@@ -4,6 +4,12 @@ namespace Saper.Model
 {
     public interface ISapperGamePanelOperations
     {
+        ushort GetHorizontalSize { get; }
+
+        ushort GetVerticalSize { get; }
+
+        ushort GetBombDensityPercent { get; }
+
         ushort GetNumberOfAdjacentBombsIn(Coordinate field);
 
         void UncoverZerosAndAdjacentIn(Coordinate currentField, ref List<Coordinate> listOfUncovered);
