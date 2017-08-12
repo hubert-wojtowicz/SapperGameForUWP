@@ -132,9 +132,9 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SapperGameModels\SapperGameModels.csproj">
-      <Project>{fcf01950-2b72-4ea0-a681-63a82d72a3da}</Project>
-      <Name>SapperGameModels</Name>
+    <ProjectReference Include="..\SapperGameView\SapperGameView.csproj">
+      <Project>{19d979a9-beb0-4aeb-8205-95d4b2208427}</Project>
+      <Name>SapperGameView</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
