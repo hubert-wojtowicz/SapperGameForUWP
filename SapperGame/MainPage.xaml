@@ -9,6 +9,6 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <game:SapperPanelView HorizontalTilesNumber="10" VerticalTilesNumber="10" SquareTileSize="5" BombDensityPercent="25" />
+        <game:SapperPanelView HorizontalTilesNumber="10" VerticalTilesNumber="10" SquareTileSize="25" BombDensityPercent="35" />
     </Grid>
 </Page>
