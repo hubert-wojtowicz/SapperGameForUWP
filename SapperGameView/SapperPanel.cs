@@ -1,5 +1,6 @@
 ﻿using Saper.Model;
 using System;
+using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -62,7 +63,8 @@ namespace SapperGameView
 
         ISapperGamePanelOperations panelLogic;
 
-        Button[,] panelTile;
+        List<Button> panelTile;
+
 
         public SapperPanelView()
         {
@@ -75,6 +77,8 @@ namespace SapperGameView
             startGameBtm.Content = "Start";
             startGameBtm.Click += RecreateGamePanel_EventHandler;
 
+            Children.Add(startGameBtm);
+
             startGUI = new Coordinate(10, 70);
 
             this.Loaded += SapperPanelView_Loaded;
@@ -85,34 +89,58 @@ namespace SapperGameView
             GenerateNewPanel();
         }
 
+        private int Trans2DTo1D(int horzontalCoordinate, int verticalCoordinate)
+        {
+            return HorizontalTilesNumber * verticalCoordinate + horzontalCoordinate;
+        }
+
+        private Coordinate Trans1DTo2D(int collectionPos)
+        {
+            return new Coordinate(collectionPos % HorizontalTilesNumber, collectionPos / HorizontalTilesNumber);
+        }
+
         private void GenerateNewPanel()
         {
-            panelTile = new Button[HorizontalTilesNumber, VerticalTilesNumber];
+            panelTile = new List<Button>();
 
-            for (int i = 0; i < VerticalTilesNumber; i++)
+            for (int j = 0; j < VerticalTilesNumber; j++)
             {
-                for (int j = 0; j < HorizontalTilesNumber; j++)
+                for (int i = 0; i < HorizontalTilesNumber; i++)
                 {
-                    panelTile[i, j] = new Button();
-                    panelTile[i, j].Height = SquareTileSize;
-                    panelTile[i, j].Width = SquareTileSize;
+                    panelTile.Add(new Button());
+                    int currentPos = Trans2DTo1D(i, j);
+                    panelTile[currentPos].Height = SquareTileSize;
+                    panelTile[currentPos].Width = SquareTileSize;
 
-                    panelTile[i, j].SetValue(Canvas.TopProperty, startGUI.vertical + i * (SquareTileSize + 5));
-                    panelTile[i, j].SetValue(Canvas.LeftProperty, startGUI.horizontal + j * (SquareTileSize + 5));
+                    panelTile[currentPos].SetValue(Canvas.TopProperty, startGUI.vertical + j * (SquareTileSize + 5));
+                    panelTile[currentPos].SetValue(Canvas.LeftProperty, startGUI.horizontal + i * (SquareTileSize + 5));
 
-                    panelTile[i, j].Content = "?";
-                    panelTile[i, j].FontSize -= 5;
+                    panelTile[currentPos].Content = "?";
+                    panelTile[currentPos].FontSize -= 5;
 
-                    panelTile[i, j].Click += SapperPanelView_Click;
+                    panelTile[currentPos].Click += SapperPanelView_Click;
 
-                    Children.Add(panelTile[i, j]);
+                    Children.Add(panelTile[currentPos]);
                 }
             }
         }
 
+        private void destroyCurrentPanel()
+        {
+            Children.Clear();
+            panelTile.Clear();
+        }
+
         private void SapperPanelView_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            Button currentBtn = (Button)sender;
+
+            int pos = panelTile.FindIndex(x => x == currentBtn);
+
+            Coordinate cord = Trans1DTo2D(pos);
+
+            startGameBtm.Content = $"({cord.horizontal},{cord.vertical})";
+
         }
 
         private void RecreateGamePanel_EventHandler(object sender, RoutedEventArgs e)
