@@ -106,7 +106,10 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Coordinate.cs" />
+    <Compile Include="ISapperGamePanelOperations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SapperGamePanelModel.cs" />
     <EmbeddedResource Include="Properties\SapperGameModels.rd.xml" />
   </ItemGroup>
   <ItemGroup>
