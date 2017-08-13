@@ -73,17 +73,27 @@ namespace SapperGameView
         #endregion
 
         TextBlock ex = new TextBlock();
-        Coordinate startGUI = null;
+        Coordinate StartDrawGamePanelAt = null;
 
         ISapperGamePanelOperations panelLogic;
 
         List<Button> panelTile;
 
+        Button startBtn;
+
 
         public SapperPanelView()
         {
-            startGUI = new Coordinate(TilesMargin, TilesMargin);
+            startBtn = new Button();
+            startBtn.SetValue(Canvas.TopProperty, 10);
+            startBtn.SetValue(Canvas.LeftProperty, 10);
+            startBtn.Content = "Start a game !";
+            startBtn.Height = 50;
+            startBtn.Width = 200;
+            startBtn.Click += RecreateGamePanel_EventHandler;
+            Children.Add((UIElement)startBtn);
 
+            StartDrawGamePanelAt = new Coordinate(TilesMargin, 70);
             this.Loaded += SapperPanelView_Loaded;
         }
 
@@ -115,8 +125,8 @@ namespace SapperGameView
                     panelTile[currentPos].Height = SquareTileSize;
                     panelTile[currentPos].Width = SquareTileSize;
 
-                    panelTile[currentPos].SetValue(Canvas.TopProperty, startGUI.vertical + j * (SquareTileSize + TilesMargin));
-                    panelTile[currentPos].SetValue(Canvas.LeftProperty, startGUI.horizontal + i * (SquareTileSize + TilesMargin));
+                    panelTile[currentPos].SetValue(Canvas.TopProperty, StartDrawGamePanelAt.vertical + j * (SquareTileSize + TilesMargin));
+                    panelTile[currentPos].SetValue(Canvas.LeftProperty, StartDrawGamePanelAt.horizontal + i * (SquareTileSize + TilesMargin));
 
                     panelTile[currentPos].Content = "?";
                     panelTile[currentPos].FontSize -= 5;
@@ -130,8 +140,14 @@ namespace SapperGameView
 
         private void destroyCurrentPanel()
         {
-            // czyszczenie dzieci czyści też przycisk na górze
-            Children?.Clear();
+            if (panelTile != null)
+            {
+                foreach (var item in panelTile)
+                {
+                    Children?.Remove((UIElement)item);
+                }
+            }
+
             panelTile?.Clear();
         }
 
