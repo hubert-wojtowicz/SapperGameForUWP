@@ -81,20 +81,30 @@ namespace SapperGameView
 
         Button startBtn;
 
+        Clock clock;
 
         public SapperPanelView()
         {
+            clock = new Clock(this, new Coordinate(10, 170));
+
             startBtn = new Button();
             startBtn.SetValue(Canvas.TopProperty, 10);
             startBtn.SetValue(Canvas.LeftProperty, 10);
             startBtn.Content = "Start a game !";
-            startBtn.Height = 50;
-            startBtn.Width = 200;
+            startBtn.Height = 40;
+            startBtn.Width = 150;
             startBtn.Click += RecreateGamePanel_EventHandler;
+            startBtn.Click += StartBtn_Click;
             Children.Add((UIElement)startBtn);
+
 
             StartDrawGamePanelAt = new Coordinate(TilesMargin, 70);
             this.Loaded += SapperPanelView_Loaded;
+        }
+
+        private void StartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            clock.Start();
         }
 
         private void SapperPanelView_Loaded(object sender, RoutedEventArgs e)
@@ -191,8 +201,17 @@ namespace SapperGameView
                 {
                     panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Content = "*";
                     panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Background = new SolidColorBrush(Colors.Red);
-                    Debug.WriteLine("Game over");
+                    clock.Stop(null, null);
+                    DeactiveAllTiles();
                 }
+            }
+        }
+
+        private void DeactiveAllTiles()
+        {
+            foreach (var item in panelTile)
+            {
+                item.IsEnabled = false;
             }
         }
 
