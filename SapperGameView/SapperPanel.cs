@@ -1,7 +1,6 @@
 ﻿using Saper.Model;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -33,40 +32,17 @@ namespace SapperGameView
             startBtn.Content = "Start a game !";
             startBtn.Height = 40;
             startBtn.Width = 150;
-            startBtn.Click += RecreateGamePanel_EventHandler;
-            startBtn.Click += StartBtn_Click;
+            startBtn.Click += GamePanel_Recreate;
+            startBtn.Click += StartButton_Clicked;
             Children.Add((UIElement)startBtn);
 
 
             StartDrawGamePanelAt = new Coordinate(TilesMargin, 70);
-            this.Loaded += SapperPanelView_Loaded;
+            this.Loaded += SapperPanel_Loaded;
 
         }
 
-        protected void OnGameFinished(EventArgs e)
-        {
-            GameFinished?.Invoke(this, e);
-        }
-
-        private void StartBtn_Click(object sender, RoutedEventArgs e)
-        {
-            clockTextBox.Start();
-        }
-
-        private void SapperPanelView_Loaded(object sender, RoutedEventArgs e)
-        {
-            RecreateGamePanel_EventHandler(this, new RoutedEventArgs());
-        }
-
-        private int Trans2DTo1D(int horzontalCoordinate, int verticalCoordinate)
-        {
-            return HorizontalTilesNumber * verticalCoordinate + horzontalCoordinate;
-        }
-
-        private Coordinate Trans1DTo2D(int collectionPos)
-        {
-            return new Coordinate(collectionPos % HorizontalTilesNumber, collectionPos / HorizontalTilesNumber);
-        }
+        #region Panel operations
 
         private void GenerateNewPanel()
         {
@@ -87,14 +63,14 @@ namespace SapperGameView
                     panelTile[currentPos].Content = "?";
                     panelTile[currentPos].FontSize -= 5;
 
-                    panelTile[currentPos].Click += SapperPanelClick_EventHandler;
+                    panelTile[currentPos].Click += SapperTile_Clicked;
 
                     Children.Add(panelTile[currentPos]);
                 }
             }
         }
 
-        private void destroyCurrentPanel()
+        private void DestroyCurrentPanel()
         {
             if (panelTile != null)
             {
@@ -107,7 +83,29 @@ namespace SapperGameView
             panelTile?.Clear();
         }
 
-        private void SapperPanelClick_EventHandler(object sender, RoutedEventArgs e)
+        private void DeactiveAllTiles()
+        {
+            foreach (var item in panelTile)
+            {
+                item.IsEnabled = false;
+            }
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void StartButton_Clicked(object sender, RoutedEventArgs e)
+        {
+            clockTextBox.Start();
+        }
+
+        private void SapperPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            GamePanel_Recreate(this, new RoutedEventArgs());
+        }
+
+        private void SapperTile_Clicked(object sender, RoutedEventArgs e)
         {
             Button currentBtn = (Button)sender;
 
@@ -150,20 +148,12 @@ namespace SapperGameView
                     clockTextBox.Stop(null, null);
                     DeactiveAllTiles();
 
-                    OnGameFinished(EventArgs.Empty);
+                    GameFinished?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
 
-        private void DeactiveAllTiles()
-        {
-            foreach (var item in panelTile)
-            {
-                item.IsEnabled = false;
-            }
-        }
-
-        private void RecreateGamePanel_EventHandler(object sender, RoutedEventArgs e)
+        private void GamePanel_Recreate(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -179,12 +169,14 @@ namespace SapperGameView
             }
             finally
             {
-                destroyCurrentPanel();
+                DestroyCurrentPanel();
                 GenerateNewPanel();
             }
         }
 
-        #region dependency properties
+        #endregion
+
+        #region Dependency properties
         public int HorizontalTilesNumber
         {
             get { return (int)GetValue(HorizontalTilesNumberProperty); }
@@ -242,6 +234,20 @@ namespace SapperGameView
         public static readonly DependencyProperty TilesMarginProperty =
             DependencyProperty.Register("TilesMargin", typeof(int), typeof(SapperPanelView), new PropertyMetadata(3));
 
+
+        #endregion
+
+        #region Helper methods
+
+        private int Trans2DTo1D(int horzontalCoordinate, int verticalCoordinate)
+        {
+            return HorizontalTilesNumber * verticalCoordinate + horzontalCoordinate;
+        }
+
+        private Coordinate Trans1DTo2D(int collectionPos)
+        {
+            return new Coordinate(collectionPos % HorizontalTilesNumber, collectionPos / HorizontalTilesNumber);
+        }
 
         #endregion
     }
