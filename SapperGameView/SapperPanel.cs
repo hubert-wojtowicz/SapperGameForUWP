@@ -103,6 +103,8 @@ namespace SapperGameView
         private void SapperPanel_Loaded(object sender, RoutedEventArgs e)
         {
             GamePanel_Recreate(this, new RoutedEventArgs());
+
+            DeactiveAllTiles();
         }
 
         private void SapperTile_Clicked(object sender, RoutedEventArgs e)
