@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Windows.UI;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -127,6 +128,9 @@ namespace SapperGameView
                         panelLogic.UncoverOneIn(coordOfClicked);
                         panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Content = numOfAdjBombs.ToString();
                         panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Background = this.Background;
+
+                        panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Foreground = AssignFontColorToUncovered(numOfAdjBombs);
+                        panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].FontWeight = FontWeights.Bold;
                     }
                     else
                     {
@@ -136,10 +140,15 @@ namespace SapperGameView
 
                         foreach (var item in lista)
                         {
+                            int currentBombNum = panelLogic.GetNumberOfAdjacentBombsIn(item);
+
                             panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Content =
-                                panelLogic.GetNumberOfAdjacentBombsIn(item).ToString();
+                                currentBombNum.ToString();
 
                             panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Background = this.Background;
+
+                            panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Foreground = AssignFontColorToUncovered(currentBombNum);
+                            panelTile[Trans2DTo1D(item.horizontal, item.vertical)].FontWeight = FontWeights.Bold;
                         }
                     }
                 }
@@ -249,6 +258,27 @@ namespace SapperGameView
         private Coordinate Trans1DTo2D(int collectionPos)
         {
             return new Coordinate(collectionPos % HorizontalTilesNumber, collectionPos / HorizontalTilesNumber);
+        }
+
+        private SolidColorBrush AssignFontColorToUncovered(int numberOfNeighbours)
+        {
+            switch (numberOfNeighbours)
+            {
+                case 1:
+                    return new SolidColorBrush(Colors.Blue);
+                case 2:
+                    return new SolidColorBrush(Colors.Green);
+                case 3:
+                    return new SolidColorBrush(Colors.Orange);
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                    return new SolidColorBrush(Colors.Red);
+                default:
+                    return new SolidColorBrush(Colors.Black);
+            }
         }
 
         #endregion
