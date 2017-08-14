@@ -9,8 +9,181 @@ using Windows.UI.Xaml.Media;
 
 namespace SapperGameView
 {
+    public delegate void GameFinishedEvent(object sender, EventArgs e);
+
     public class SapperPanelView : Canvas
     {
+        // event occurs when one round of game is finished
+        public event GameFinishedEvent GameFinished;
+
+        ISapperGamePanelOperations panelLogic;
+        Coordinate StartDrawGamePanelAt = null;
+        List<Button> panelTile;
+
+        Button startBtn;
+        Clock clockTextBox;
+
+        public SapperPanelView()
+        {
+            clockTextBox = new Clock(this, new Coordinate(10, 170));
+
+            startBtn = new Button();
+            startBtn.SetValue(Canvas.TopProperty, 10);
+            startBtn.SetValue(Canvas.LeftProperty, 10);
+            startBtn.Content = "Start a game !";
+            startBtn.Height = 40;
+            startBtn.Width = 150;
+            startBtn.Click += RecreateGamePanel_EventHandler;
+            startBtn.Click += StartBtn_Click;
+            Children.Add((UIElement)startBtn);
+
+
+            StartDrawGamePanelAt = new Coordinate(TilesMargin, 70);
+            this.Loaded += SapperPanelView_Loaded;
+
+        }
+
+        protected void OnGameFinished(EventArgs e)
+        {
+            GameFinished?.Invoke(this, e);
+        }
+
+        private void StartBtn_Click(object sender, RoutedEventArgs e)
+        {
+            clockTextBox.Start();
+        }
+
+        private void SapperPanelView_Loaded(object sender, RoutedEventArgs e)
+        {
+            RecreateGamePanel_EventHandler(this, new RoutedEventArgs());
+        }
+
+        private int Trans2DTo1D(int horzontalCoordinate, int verticalCoordinate)
+        {
+            return HorizontalTilesNumber * verticalCoordinate + horzontalCoordinate;
+        }
+
+        private Coordinate Trans1DTo2D(int collectionPos)
+        {
+            return new Coordinate(collectionPos % HorizontalTilesNumber, collectionPos / HorizontalTilesNumber);
+        }
+
+        private void GenerateNewPanel()
+        {
+            panelTile = new List<Button>();
+
+            for (int j = 0; j < VerticalTilesNumber; j++)
+            {
+                for (int i = 0; i < HorizontalTilesNumber; i++)
+                {
+                    panelTile.Add(new Button());
+                    int currentPos = Trans2DTo1D(i, j);
+                    panelTile[currentPos].Height = SquareTileSize;
+                    panelTile[currentPos].Width = SquareTileSize;
+
+                    panelTile[currentPos].SetValue(Canvas.TopProperty, StartDrawGamePanelAt.vertical + j * (SquareTileSize + TilesMargin));
+                    panelTile[currentPos].SetValue(Canvas.LeftProperty, StartDrawGamePanelAt.horizontal + i * (SquareTileSize + TilesMargin));
+
+                    panelTile[currentPos].Content = "?";
+                    panelTile[currentPos].FontSize -= 5;
+
+                    panelTile[currentPos].Click += SapperPanelClick_EventHandler;
+
+                    Children.Add(panelTile[currentPos]);
+                }
+            }
+        }
+
+        private void destroyCurrentPanel()
+        {
+            if (panelTile != null)
+            {
+                foreach (var item in panelTile)
+                {
+                    Children?.Remove((UIElement)item);
+                }
+            }
+
+            panelTile?.Clear();
+        }
+
+        private void SapperPanelClick_EventHandler(object sender, RoutedEventArgs e)
+        {
+            Button currentBtn = (Button)sender;
+
+            int pos = panelTile.FindIndex(x => x == currentBtn);
+
+            Coordinate coordOfClicked = Trans1DTo2D(pos);
+
+
+            if (!panelLogic.IsFieldUncovered(coordOfClicked))
+            {
+                if (!panelLogic.IsBombInside(coordOfClicked))
+                {
+                    int numOfAdjBombs = panelLogic.GetNumberOfAdjacentBombsIn(coordOfClicked);
+
+                    if (numOfAdjBombs > 0)
+                    {
+                        panelLogic.UncoverOneIn(coordOfClicked);
+                        panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Content = numOfAdjBombs.ToString();
+                        panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Background = this.Background;
+                    }
+                    else
+                    {
+                        List<Coordinate> lista = new List<Coordinate>();
+                        panelLogic.UncoverZerosAndAdjacentIn(coordOfClicked, ref lista);
+
+
+                        foreach (var item in lista)
+                        {
+                            panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Content =
+                                panelLogic.GetNumberOfAdjacentBombsIn(item).ToString();
+
+                            panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Background = this.Background;
+                        }
+                    }
+                }
+                else
+                {
+                    panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Content = "*";
+                    panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Background = new SolidColorBrush(Colors.Red);
+                    clockTextBox.Stop(null, null);
+                    DeactiveAllTiles();
+
+                    OnGameFinished(EventArgs.Empty);
+                }
+            }
+        }
+
+        private void DeactiveAllTiles()
+        {
+            foreach (var item in panelTile)
+            {
+                item.IsEnabled = false;
+            }
+        }
+
+        private void RecreateGamePanel_EventHandler(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ushort h = Convert.ToUInt16(HorizontalTilesNumber);
+                ushort v = Convert.ToUInt16(VerticalTilesNumber);
+                ushort p = Convert.ToUInt16(BombDensityPercent);
+
+                panelLogic = new SapperGamePanelModel(h, v, p);
+            }
+            catch (Exception ex)
+            {
+                panelLogic = new SapperGamePanelModel(10, 10);
+            }
+            finally
+            {
+                destroyCurrentPanel();
+                GenerateNewPanel();
+            }
+        }
+
         #region dependency properties
         public int HorizontalTilesNumber
         {
@@ -71,169 +244,5 @@ namespace SapperGameView
 
 
         #endregion
-
-        TextBlock ex = new TextBlock();
-        Coordinate StartDrawGamePanelAt = null;
-
-        ISapperGamePanelOperations panelLogic;
-
-        List<Button> panelTile;
-
-        Button startBtn;
-
-        Clock clock;
-
-        public SapperPanelView()
-        {
-            clock = new Clock(this, new Coordinate(10, 170));
-
-            startBtn = new Button();
-            startBtn.SetValue(Canvas.TopProperty, 10);
-            startBtn.SetValue(Canvas.LeftProperty, 10);
-            startBtn.Content = "Start a game !";
-            startBtn.Height = 40;
-            startBtn.Width = 150;
-            startBtn.Click += RecreateGamePanel_EventHandler;
-            startBtn.Click += StartBtn_Click;
-            Children.Add((UIElement)startBtn);
-
-
-            StartDrawGamePanelAt = new Coordinate(TilesMargin, 70);
-            this.Loaded += SapperPanelView_Loaded;
-        }
-
-        private void StartBtn_Click(object sender, RoutedEventArgs e)
-        {
-            clock.Start();
-        }
-
-        private void SapperPanelView_Loaded(object sender, RoutedEventArgs e)
-        {
-            RecreateGamePanel_EventHandler(this, new RoutedEventArgs());
-        }
-
-        private int Trans2DTo1D(int horzontalCoordinate, int verticalCoordinate)
-        {
-            return HorizontalTilesNumber * verticalCoordinate + horzontalCoordinate;
-        }
-
-        private Coordinate Trans1DTo2D(int collectionPos)
-        {
-            return new Coordinate(collectionPos % HorizontalTilesNumber, collectionPos / HorizontalTilesNumber);
-        }
-
-        private void GenerateNewPanel()
-        {
-            panelTile = new List<Button>();
-
-            for (int j = 0; j < VerticalTilesNumber; j++)
-            {
-                for (int i = 0; i < HorizontalTilesNumber; i++)
-                {
-                    panelTile.Add(new Button());
-                    int currentPos = Trans2DTo1D(i, j);
-                    panelTile[currentPos].Height = SquareTileSize;
-                    panelTile[currentPos].Width = SquareTileSize;
-
-                    panelTile[currentPos].SetValue(Canvas.TopProperty, StartDrawGamePanelAt.vertical + j * (SquareTileSize + TilesMargin));
-                    panelTile[currentPos].SetValue(Canvas.LeftProperty, StartDrawGamePanelAt.horizontal + i * (SquareTileSize + TilesMargin));
-
-                    panelTile[currentPos].Content = "?";
-                    panelTile[currentPos].FontSize -= 5;
-
-                    panelTile[currentPos].Click += SapperPanelView_Click;
-
-                    Children.Add(panelTile[currentPos]);
-                }
-            }
-        }
-
-        private void destroyCurrentPanel()
-        {
-            if (panelTile != null)
-            {
-                foreach (var item in panelTile)
-                {
-                    Children?.Remove((UIElement)item);
-                }
-            }
-
-            panelTile?.Clear();
-        }
-
-        private void SapperPanelView_Click(object sender, RoutedEventArgs e)
-        {
-            Button currentBtn = (Button)sender;
-
-            int pos = panelTile.FindIndex(x => x == currentBtn);
-
-            Coordinate coordOfClicked = Trans1DTo2D(pos);
-
-
-            if (!panelLogic.IsFieldUncovered(coordOfClicked))
-            {
-                if (!panelLogic.IsBombInside(coordOfClicked))
-                {
-                    int numOfAdjBombs = panelLogic.GetNumberOfAdjacentBombsIn(coordOfClicked);
-
-                    if (numOfAdjBombs > 0)
-                    {
-                        panelLogic.UncoverOneIn(coordOfClicked);
-                        panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Content = numOfAdjBombs.ToString();
-                        panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Background = this.Background;
-                    }
-                    else
-                    {
-                        List<Coordinate> lista = new List<Coordinate>();
-                        panelLogic.UncoverZerosAndAdjacentIn(coordOfClicked, ref lista);
-
-
-                        foreach (var item in lista)
-                        {
-                            panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Content =
-                                panelLogic.GetNumberOfAdjacentBombsIn(item).ToString();
-
-                            panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Background = this.Background;
-                        }
-                    }
-                }
-                else
-                {
-                    panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Content = "*";
-                    panelTile[Trans2DTo1D(coordOfClicked.horizontal, coordOfClicked.vertical)].Background = new SolidColorBrush(Colors.Red);
-                    clock.Stop(null, null);
-                    DeactiveAllTiles();
-                }
-            }
-        }
-
-        private void DeactiveAllTiles()
-        {
-            foreach (var item in panelTile)
-            {
-                item.IsEnabled = false;
-            }
-        }
-
-        private void RecreateGamePanel_EventHandler(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                ushort h = Convert.ToUInt16(HorizontalTilesNumber);
-                ushort v = Convert.ToUInt16(VerticalTilesNumber);
-                ushort p = Convert.ToUInt16(BombDensityPercent);
-
-                panelLogic = new SapperGamePanelModel(h, v, p);
-            }
-            catch (Exception ex)
-            {
-                panelLogic = new SapperGamePanelModel(10, 10);
-            }
-            finally
-            {
-                destroyCurrentPanel();
-                GenerateNewPanel();
-            }
-        }
     }
 }
