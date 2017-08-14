@@ -104,7 +104,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="SapperGame_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\Default.rd.xml" />
@@ -132,6 +131,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SapperGameModels\SapperGameModels.csproj">
+      <Project>{fcf01950-2b72-4ea0-a681-63a82d72a3da}</Project>
+      <Name>SapperGameModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SapperGameView\SapperGameView.csproj">
       <Project>{19d979a9-beb0-4aeb-8205-95d4b2208427}</Project>
       <Name>SapperGameView</Name>
