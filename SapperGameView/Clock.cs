@@ -1,5 +1,6 @@
 ﻿using Saper.Model;
 using System;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -16,11 +17,14 @@ namespace SapperGameView
         public Clock(Canvas ctx, Coordinate startPosition)
         {
             clockText = new TextBlock();
-            clockText.SetValue(Canvas.TopProperty, 10);
-            clockText.SetValue(Canvas.LeftProperty, 170);
+            clockText.SetValue(Canvas.TopProperty, startPosition.vertical);
+            clockText.SetValue(Canvas.LeftProperty, startPosition.horizontal);
             clockText.Text = "00:00:00.00";
             clockText.Height = 40;
             clockText.Width = 150;
+
+            clockText.FontSize += 5;
+            clockText.FontWeight = FontWeights.Bold;
 
             ctx.Children.Add(clockText);
 

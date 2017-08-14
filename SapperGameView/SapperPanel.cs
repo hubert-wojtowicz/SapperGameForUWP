@@ -25,7 +25,7 @@ namespace SapperGameView
 
         public SapperPanelView()
         {
-            clockTextBox = new Clock(this, new Coordinate(10, 170));
+            clockTextBox = new Clock(this, new Coordinate(170, 15));
 
             startBtn = new Button();
             startBtn.SetValue(Canvas.TopProperty, 10);
