@@ -109,7 +109,7 @@ namespace Saper.Model
                     UncoverZerosAndAdjacentIn(new Coordinate(currentField, 1, -1), ref listOfUncovered);
 
                     UncoverZerosAndAdjacentIn(new Coordinate(currentField, -1, 0), ref listOfUncovered);
-                    UncoverZerosAndAdjacentIn(new Coordinate(currentField, -1, 0), ref listOfUncovered);
+                    UncoverZerosAndAdjacentIn(new Coordinate(currentField, 1, 0), ref listOfUncovered);
 
                     UncoverZerosAndAdjacentIn(new Coordinate(currentField, -1, 1), ref listOfUncovered);
                     UncoverZerosAndAdjacentIn(new Coordinate(currentField, 0, 1), ref listOfUncovered);
