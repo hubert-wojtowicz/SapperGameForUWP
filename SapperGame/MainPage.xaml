@@ -8,7 +8,50 @@
     xmlns:game="using:SapperGameView"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <game:SapperPanelView HorizontalTilesNumber="10" VerticalTilesNumber="10" SquareTileSize="25" BombDensityPercent="30" />
+    <Grid>
+        <SplitView Name="RootSplitView" DisplayMode="CompactOverlay" OpenPaneLength="400" PanePlacement="Left" CompactPaneLength="50" IsPaneOpen="False">
+            <SplitView.Pane>
+                <Grid Background="{ThemeResource PivotNavButtonBackgroundThemeBrush}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="77"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="17" />
+                        <RowDefinition Height="38" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="1" Grid.Column="1" FontSize="20">Ustawienia gry</TextBlock>
+                    <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Width="180">
+                        <TextBlock Margin="10,0,0,0" >Szerokość planszy</TextBlock>
+                        <Slider Minimum="3" Maximum="50" StepFrequency="1" Width="180" Value="{Binding HorizontalTilesNumber, ElementName=GameField}"/>
+
+                        <TextBlock Margin="10,0,0,0">Wysokość planszy</TextBlock>
+                        <Slider Minimum="3" Maximum="50" StepFrequency="1" Width="180" Value="{Binding VerticalTilesNumber, ElementName=GameField}"/>
+
+                        <TextBlock Margin="10,0,0,0">Procent bomb</TextBlock>
+                        <Slider Minimum="5" Maximum="50" StepFrequency="1" Width="180" Value="{Binding BombDensityPercent, ElementName=GameField}"/>
+
+                        <TextBlock Margin="0,0,10,0" FontSize="20">Prepared by</TextBlock>
+                        <TextBlock Margin="0,0,40,0">Hubert Wójtowicz</TextBlock>
+                        <TextBlock>Copyright © 2017</TextBlock>
+
+                    </StackPanel>
+                </Grid>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <game:SapperPanelView Name="GameField" HorizontalTilesNumber="10" VerticalTilesNumber="10" SquareTileSize="25" BombDensityPercent="5" />
+            </SplitView.Content>
+
+        </SplitView>
+        <ToggleButton x:Name="TogglePaneButton" IsThreeState="False" 
+            FontFamily="{ThemeResource SymbolThemeFontFamily}"
+            Background="{ThemeResource PivotNavButtonBackgroundThemeBrush}"
+            Content="&#xE700;"
+            Margin="0" Width="48" Height="48" VerticalAlignment="Top"
+            AutomationProperties.Name="Menu" ToolTipService.ToolTip="Menu"
+            IsChecked="{Binding IsPaneOpen, ElementName=RootSplitView, Mode=TwoWay}"/>
+
     </Grid>
 </Page>
+    
