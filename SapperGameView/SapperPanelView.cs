@@ -161,8 +161,11 @@ namespace SapperGameView
                         {
                             int currentBombNum = panelLogic.GetNumberOfAdjacentBombsIn(item);
 
-                            panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Content =
+                            if (currentBombNum != 0)
+                                panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Content =
                                 currentBombNum.ToString();
+                            else
+                                panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Content = String.Empty;
 
                             panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Background = this.Background;
 
