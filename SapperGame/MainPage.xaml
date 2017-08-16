@@ -6,13 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:game="using:SapperGameView"
-    xmlns:conv="using:SapperGame.Converters"
     mc:Ignorable="d">
 
-    <Page.Resources>
-        <conv:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
-    </Page.Resources>
-        
     <Grid>
         <SplitView Name="RootSplitView" DisplayMode="CompactOverlay" OpenPaneLength="400" PanePlacement="Left" CompactPaneLength="50" IsPaneOpen="False" PaneClosed="RootSplitView_PaneClosed" Loading="RootSplitView_Loading">
             <SplitView.Pane>
