@@ -107,7 +107,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Clock.cs" />
-    <Compile Include="SapperPanel.cs" />
+    <Compile Include="SapperPanelView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\SapperGameView.rd.xml" />
   </ItemGroup>
