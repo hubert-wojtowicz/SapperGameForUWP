@@ -1,6 +1,7 @@
 ﻿using Saper.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Windows.UI;
 using Windows.UI.Text;
 using Windows.UI.Xaml;
@@ -39,15 +40,19 @@ namespace SapperGameView
 
 
             StartDrawGamePanelAt = new Coordinate(TilesMargin, 70);
-            this.Loaded += SapperPanel_Loaded;
 
+            this.Loaded += SapperPanel_Loaded;
         }
 
         #region Panel operations
 
-        private void GenerateNewPanel()
+        private void GenerateNewGamePanelAndModel()
         {
             panelTile = new List<Button>();
+            panelLogic = new SapperGamePanelModel(
+                Convert.ToUInt16(HorizontalTilesNumber),
+                Convert.ToUInt16(VerticalTilesNumber),
+                Convert.ToUInt16(BombDensityPercent));
 
             for (int j = 0; j < VerticalTilesNumber; j++)
             {
@@ -69,9 +74,11 @@ namespace SapperGameView
                     Children.Add(panelTile[currentPos]);
                 }
             }
+
+            DeactiveAllTiles();
         }
 
-        private void DestroyCurrentPanel()
+        private void DestroyCurrentGamePanelAndModel()
         {
             if (panelTile != null)
             {
@@ -82,6 +89,10 @@ namespace SapperGameView
             }
 
             panelTile?.Clear();
+
+            panelLogic = null;
+
+            clockTextBox.Stop(this, null);
         }
 
         private void DeactiveAllTiles()
@@ -92,19 +103,27 @@ namespace SapperGameView
             }
         }
 
+        private void ActivateAllTiles()
+        {
+            foreach (var item in panelTile)
+            {
+                item.IsEnabled = true;
+            }
+        }
+
         #endregion
 
         #region Event handlers
 
         private void StartButton_Clicked(object sender, RoutedEventArgs e)
         {
+            ActivateAllTiles();
             clockTextBox.Start();
         }
 
         private void SapperPanel_Loaded(object sender, RoutedEventArgs e)
         {
             GamePanel_Recreate(this, new RoutedEventArgs());
-
             DeactiveAllTiles();
         }
 
@@ -164,25 +183,10 @@ namespace SapperGameView
             }
         }
 
-        private void GamePanel_Recreate(object sender, RoutedEventArgs e)
+        public void GamePanel_Recreate(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                ushort h = Convert.ToUInt16(HorizontalTilesNumber);
-                ushort v = Convert.ToUInt16(VerticalTilesNumber);
-                ushort p = Convert.ToUInt16(BombDensityPercent);
-
-                panelLogic = new SapperGamePanelModel(h, v, p);
-            }
-            catch (Exception ex)
-            {
-                panelLogic = new SapperGamePanelModel(10, 10);
-            }
-            finally
-            {
-                DestroyCurrentPanel();
-                GenerateNewPanel();
-            }
+            DestroyCurrentGamePanelAndModel();
+            GenerateNewGamePanelAndModel();
         }
 
         #endregion

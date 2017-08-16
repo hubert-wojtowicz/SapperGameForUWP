@@ -51,9 +51,9 @@ namespace Saper.Model
                     vertCord = pseudoNumberGenerator.Next(0, verticalSize - 1);
                     horCord = pseudoNumberGenerator.Next(0, horizontalSize - 1);
                 }
-                while (isBombPositionTbl[vertCord, horCord]);
+                while (isBombPositionTbl[horCord, vertCord]);
 
-                isBombPositionTbl[vertCord, horCord] = true;
+                isBombPositionTbl[horCord, vertCord] = true;
             }
         }
 
