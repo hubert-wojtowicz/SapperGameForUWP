@@ -6,41 +6,57 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:game="using:SapperGameView"
+    xmlns:conv="using:SapperGame.Converters"
     mc:Ignorable="d">
 
+    <Page.Resources>
+        <conv:DoubleToIntConverter x:Key="DoubleToIntConverter"/>
+    </Page.Resources>
+        
     <Grid>
-        <SplitView Name="RootSplitView" DisplayMode="CompactOverlay" OpenPaneLength="400" PanePlacement="Left" CompactPaneLength="50" IsPaneOpen="False">
+        <SplitView Name="RootSplitView" DisplayMode="CompactOverlay" OpenPaneLength="400" PanePlacement="Left" CompactPaneLength="50" IsPaneOpen="False" PaneClosed="RootSplitView_PaneClosed" Loading="RootSplitView_Loading">
             <SplitView.Pane>
                 <Grid Background="{ThemeResource PivotNavButtonBackgroundThemeBrush}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="77"/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="202*"/>
+                        <ColumnDefinition Width="121*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="17" />
                         <RowDefinition Height="38" />
                         <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="4*" />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="1" Grid.Column="1" FontSize="20">Ustawienia gry</TextBlock>
-                    <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" Width="180">
-                        <TextBlock Margin="10,0,0,0" >Szerokość planszy</TextBlock>
-                        <Slider Minimum="3" Maximum="50" StepFrequency="1" Width="180" Value="{Binding HorizontalTilesNumber, ElementName=GameField}"/>
+                    
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="1" FontSize="20">Game settings</TextBlock>
 
-                        <TextBlock Margin="10,0,0,0">Wysokość planszy</TextBlock>
-                        <Slider Minimum="3" Maximum="50" StepFrequency="1" Width="180" Value="{Binding VerticalTilesNumber, ElementName=GameField}"/>
 
-                        <TextBlock Margin="10,0,0,0">Procent bomb</TextBlock>
-                        <Slider Minimum="5" Maximum="50" StepFrequency="1" Width="180" Value="{Binding BombDensityPercent, ElementName=GameField}"/>
+                    <Slider Grid.Row="2" Grid.Column="1" Name="HorSlider" Header="Horizontal tiles number" Minimum="3" Maximum="50" StepFrequency="1"/>
+                    <TextBlock  Grid.Row="2" Grid.Column="2" FontSize="20" Margin="15,25,0,0" Text="{Binding Value ,ElementName=HorSlider}"/>
 
-                        <TextBlock Margin="0,0,10,0" FontSize="20">Prepared by</TextBlock>
-                        <TextBlock Margin="0,0,40,0">Hubert Wójtowicz</TextBlock>
+
+                    <Slider  Grid.Row="3" Grid.Column="1"  Name="VertSlider" Header="Vertical tiles number" Minimum="3" Maximum="50" StepFrequency="1"/>
+                    <TextBlock  Grid.Row="3" Grid.Column="2" FontSize="20" Margin="15,25,0,0" Text="{Binding Value ,ElementName=VertSlider}"/>
+
+
+                    <Slider  Grid.Row="4" Grid.Column="1" Name="BombDens" Header="Procent of bombs" Minimum="1" Maximum="25" StepFrequency="1"/>
+                    <TextBlock  Grid.Row="4" Grid.Column="2" FontSize="20" Margin="15,25,0,0" Text="{Binding Value ,ElementName=BombDens}"/>
+
+                    
+                    
+                    <StackPanel Grid.Row="5" Grid.Column="1"  Orientation="Vertical">
+                        <TextBlock FontSize="20">Prepared by</TextBlock>
+                        <TextBlock>Hubert Wójtowicz</TextBlock>
                         <TextBlock>Copyright © 2017</TextBlock>
-
                     </StackPanel>
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
-                <game:SapperPanelView Name="GameField" HorizontalTilesNumber="10" VerticalTilesNumber="10" SquareTileSize="25" BombDensityPercent="5" />
+                <game:SapperPanelView Name="GameField" HorizontalTilesNumber="12" VerticalTilesNumber="15" SquareTileSize="25" BombDensityPercent="5" />
             </SplitView.Content>
 
         </SplitView>
