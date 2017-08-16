@@ -26,5 +26,21 @@ namespace SapperGame
         {
             this.InitializeComponent();
         }
+
+        private void RootSplitView_PaneClosed(SplitView sender, object args)
+        {
+            GameField.HorizontalTilesNumber = (int)HorSlider.Value;
+            GameField.VerticalTilesNumber = (int)VertSlider.Value;
+            GameField.BombDensityPercent = (int)BombDens.Value;
+
+            GameField.GamePanel_Recreate(sender, new RoutedEventArgs());
+        }
+
+        private void RootSplitView_Loading(FrameworkElement sender, object args)
+        {
+            HorSlider.Value = GameField.HorizontalTilesNumber;
+            VertSlider.Value = GameField.VerticalTilesNumber;
+            BombDens.Value = GameField.BombDensityPercent;
+        }
     }
 }
