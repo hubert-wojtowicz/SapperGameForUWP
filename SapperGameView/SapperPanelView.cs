@@ -127,6 +127,32 @@ namespace SapperGameView
             DeactiveAllTiles();
         }
 
+        private async void ButtonShowMessageDialog_Click(object sender, RoutedEventArgs e)
+        {
+            clockTextBox.Stop(sender, e);
+
+            var dialog = new Windows.UI.Popups.MessageDialog(
+                        "You have uncovered all bombs in time. Congratulations! Do you want start new game?");
+
+            dialog.Commands.Add(new Windows.UI.Popups.UICommand("Yes") { Id = 0 });
+            dialog.Commands.Add(new Windows.UI.Popups.UICommand("No") { Id = 1 });
+
+            dialog.DefaultCommandIndex = 0;
+            dialog.CancelCommandIndex = 1;
+
+            var result = await dialog.ShowAsync();
+
+            if ((int)result.Id == 0)
+            {
+                DestroyCurrentGamePanelAndModel();
+                GenerateNewGamePanelAndModel();
+            }
+            else
+            {
+                DeactiveAllTiles();
+            }
+        }
+
         private void SapperTile_Clicked(object sender, RoutedEventArgs e)
         {
             Button currentBtn = (Button)sender;
@@ -172,6 +198,11 @@ namespace SapperGameView
                             panelTile[Trans2DTo1D(item.horizontal, item.vertical)].Foreground = AssignFontColorToUncovered(currentBombNum);
                             panelTile[Trans2DTo1D(item.horizontal, item.vertical)].FontWeight = FontWeights.Bold;
                         }
+                    }
+
+                    if (!panelLogic.LeftFieldsUncoveredWithoutBomb())
+                    {
+                        ButtonShowMessageDialog_Click(this, e);
                     }
                 }
                 else
